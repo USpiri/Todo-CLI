@@ -1,12 +1,14 @@
 use std::{fmt};
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Serialize, Deserialize)]
 pub enum TodoItemStatus {
     Done,
     Undone,
     Pending,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct TodoList {
     pub list: Vec<TodoItem>,
 }
@@ -111,6 +113,7 @@ impl TodoList {
     }
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct TodoItem {
     name: String,
     status: TodoItemStatus,

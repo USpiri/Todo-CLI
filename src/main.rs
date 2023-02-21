@@ -1,19 +1,28 @@
 mod todo;
 use std::env;
-use std::io;
+use std::fs::OpenOptions;
+use std::io::{self, SeekFrom, Seek};
 use todo::TodoList;
 
-fn main() {
+fn main() -> io::Result<()> {
     
     let args: Vec<String> = env::args().collect();
-    let mut todo_list = TodoList::new();
-
-    todo_list.add_to_list("Some string".to_string());
-    todo_list.add_to_list("Some other string".to_string());
-    todo_list.add_to_list("Some string".to_string());
-    todo_list.add_to_list("Some other string".to_string());
-    todo_list.mark_done(2);
-    todo_list.mark_pending(1);
+    // let mut todo_list = TodoList::new();
+    let path = home::home_dir().map(|mut path| {
+        path.push(".rusty-todo.json");
+        path
+    });
+    let mut file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .open(path.as_ref().expect("Error"))?; 
+    let mut todo_list:TodoList = match serde_json::from_reader(&file) {
+        Ok(todo_list) => todo_list,
+        Err(e) if e.is_eof() => TodoList::new(),
+        Err(e) => Err(e)?,
+    };
+    file.seek(SeekFrom::Start(0))?;
 
     match args.len() {
         // No arguments
@@ -41,11 +50,12 @@ fn main() {
                     .read_line(&mut input)
                     .expect("Please enter a valid text.");
                 let number:usize = input.trim().parse().expect("Input not a number");
-                if number > todo_list.list.len() {
+                if number >= todo_list.list.len() {
                     panic!("{} is not a valid task", number);
                 } else {
                     todo_list.remove_task(number);
                 }
+                file.set_len(0)?;
             }
             "done" => {
                 println!("Enter the number of task to mark as done:");
@@ -116,7 +126,13 @@ fn main() {
                 todo_list.add_to_list(args[2].to_string());
             }
             "remove" => {
-                todo_list.remove_task(args[2].parse().expect("Error converting integer"));
+                let number = args[2].parse().expect("Error converting integer");
+                if number >= todo_list.list.len() {
+                    panic!("{} is not a valid task", number);
+                } else {
+                    todo_list.remove_task(number);
+                }
+                file.set_len(0)?;
             }
             "done" => {
                 todo_list.mark_done(args[2].parse().expect("Error converting integer"));
@@ -136,4 +152,6 @@ fn main() {
             println!("Invalid number of arguments");
         }
     }
+    serde_json::to_writer(file, &todo_list)?;
+    Ok(())
 }
