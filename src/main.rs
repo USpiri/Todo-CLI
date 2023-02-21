@@ -50,7 +50,7 @@ fn main() -> io::Result<()> {
                     .read_line(&mut input)
                     .expect("Please enter a valid text.");
                 let number:usize = input.trim().parse().expect("Input not a number");
-                if number >= todo_list.list.len() {
+                if number > todo_list.list.len() {
                     panic!("{} is not a valid task", number);
                 } else {
                     todo_list.remove_task(number);
@@ -69,6 +69,7 @@ fn main() -> io::Result<()> {
                 } else {
                     todo_list.mark_done(number);
                 }
+                file.set_len(0)?;
             }
             "undone" =>  {
                 println!("Enter the number of task to mark as undone:");
@@ -82,6 +83,7 @@ fn main() -> io::Result<()> {
                 } else {
                     todo_list.mark_undone(number);
                 }
+                file.set_len(0)?;
             }
             "pending" => {
                 println!("Enter the number of task to mark as pending:");
@@ -95,6 +97,7 @@ fn main() -> io::Result<()> {
                 } else {
                     todo_list.mark_pending(number);
                 }
+                file.set_len(0)?;
             }
             "list" => {
                 todo_list.print();
@@ -127,7 +130,7 @@ fn main() -> io::Result<()> {
             }
             "remove" => {
                 let number = args[2].parse().expect("Error converting integer");
-                if number >= todo_list.list.len() {
+                if number > todo_list.list.len() {
                     panic!("{} is not a valid task", number);
                 } else {
                     todo_list.remove_task(number);
@@ -136,12 +139,15 @@ fn main() -> io::Result<()> {
             }
             "done" => {
                 todo_list.mark_done(args[2].parse().expect("Error converting integer"));
+                file.set_len(0)?;
             }
             "undone" => {
                 todo_list.mark_undone(args[2].parse().expect("Error converting integer"));
+                file.set_len(0)?;
             }
             "pending" => {
                 todo_list.mark_pending(args[2].parse().expect("Error converting integer"));
+                file.set_len(0)?;
             }
             _ => {
                 panic!("You must provide an accepted command")
