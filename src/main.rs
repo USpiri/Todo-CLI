@@ -31,34 +31,34 @@ fn main() -> io::Result<()> {
         // One argument
         2 => match args[1].as_str() {
             "add" => {
-                match todo_list.ask_add_to_list(){
+                match todo_list.ask_add_to_list() {
                     Ok(string) => println!("{string}"),
                     Err(e) => println!("{e}"),
                 };
             }
             "remove" => {
-                match todo_list.ask_remove_task(){
+                match todo_list.ask_remove_task() {
                     Ok(string) => println!("{string}"),
                     Err(e) => println!("{e}"),
                 };
                 file.set_len(0)?;
             }
             "done" => {
-                match todo_list.ask_mark_done(){
+                match todo_list.ask_mark_done() {
                     Ok(string) => println!("{string}"),
                     Err(e) => println!("{e}"),
                 };
                 file.set_len(0)?;
             }
             "undone" => {
-                match todo_list.ask_mark_undone(){
+                match todo_list.ask_mark_undone() {
                     Ok(string) => println!("{string}"),
                     Err(e) => println!("{e}"),
                 };
                 file.set_len(0)?;
             }
             "pending" => {
-                match todo_list.ask_mark_pending(){
+                match todo_list.ask_mark_pending() {
                     Ok(string) => println!("{string}"),
                     Err(e) => println!("{e}"),
                 };
@@ -84,6 +84,7 @@ fn main() -> io::Result<()> {
                 println!("New ordered list:");
                 todo_list.print();
             }
+            "help" => help(),
             _ => {
                 help();
                 panic!("You must provide an accepted command");
@@ -145,7 +146,7 @@ fn help() {
     println!("     list-undone:                  list all tasks marked as undone");
     println!("     list-pending:                 list all tasks marked as pending");
     println!("     list-all:                     list all tasks by category");
-    println!("\nUSAGE: \n   todo [command] <argument>");
+    println!("\nUSAGE: \n     todo [command] <argument>");
     println!("\nThe text inside '< >' marks is optional");
     println!("Task description must have double quotation marks, it is not necessary for 'task number'\n");
     println!("For more information please visit: https://www.google.com/\n")
