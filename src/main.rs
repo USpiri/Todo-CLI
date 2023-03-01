@@ -1,13 +1,11 @@
 mod todo;
 use std::env;
 use std::fs::OpenOptions;
-use std::io::{self, SeekFrom, Seek};
+use std::io::{self, Seek, SeekFrom};
 use todo::TodoList;
 
 fn main() -> io::Result<()> {
-    
     let args: Vec<String> = env::args().collect();
-    // let mut todo_list = TodoList::new();
     let path = home::home_dir().map(|mut path| {
         path.push(".rusty-todo.json");
         path
@@ -16,8 +14,8 @@ fn main() -> io::Result<()> {
         .read(true)
         .write(true)
         .create(true)
-        .open(path.as_ref().expect("Error"))?; 
-    let mut todo_list:TodoList = match serde_json::from_reader(&file) {
+        .open(path.as_ref().expect("Something wen wrong reading the file"))?;
+    let mut todo_list: TodoList = match serde_json::from_reader(&file) {
         Ok(todo_list) => todo_list,
         Err(e) if e.is_eof() => TodoList::new(),
         Err(e) => Err(e)?,
@@ -27,76 +25,43 @@ fn main() -> io::Result<()> {
     match args.len() {
         // No arguments
         1 => {
-            println!("Hello No args");
+            welcome();
+            help();
         }
         // One argument
         2 => match args[1].as_str() {
             "add" => {
-                println!("Enter your new task:");
-                let mut input = String::new();
-                io::stdin()
-                    .read_line(&mut input)
-                    .expect("Please enter a valid text.");
-                if input.trim().chars().count() == 0 {
-                    panic!("You must provide an accepted text");
-                } else {
-                    todo_list.add_to_list(input);
-                }
+                match todo_list.ask_add_to_list(){
+                    Ok(string) => println!("{string}"),
+                    Err(e) => println!("{e}"),
+                };
             }
             "remove" => {
-                println!("Enter the number of task to remove:");
-                let mut input = String::new();
-                io::stdin()
-                    .read_line(&mut input)
-                    .expect("Please enter a valid text.");
-                let number:usize = input.trim().parse().expect("Input not a number");
-                if number > todo_list.list.len() {
-                    panic!("{} is not a valid task", number);
-                } else {
-                    todo_list.remove_task(number);
-                }
+                match todo_list.ask_remove_task(){
+                    Ok(string) => println!("{string}"),
+                    Err(e) => println!("{e}"),
+                };
                 file.set_len(0)?;
             }
             "done" => {
-                println!("Enter the number of task to mark as done:");
-                let mut input = String::new();
-                io::stdin()
-                    .read_line(&mut input)
-                    .expect("Please enter a valid text.");
-                let number:usize = input.trim().parse().expect("Input not a number");
-                if number > todo_list.list.len() {
-                    panic!("{} is not a valid task", number);
-                } else {
-                    todo_list.mark_done(number);
-                }
+                match todo_list.ask_mark_done(){
+                    Ok(string) => println!("{string}"),
+                    Err(e) => println!("{e}"),
+                };
                 file.set_len(0)?;
             }
-            "undone" =>  {
-                println!("Enter the number of task to mark as undone:");
-                let mut input = String::new();
-                io::stdin()
-                    .read_line(&mut input)
-                    .expect("Please enter a valid text.");
-                let number:usize = input.trim().parse().expect("Input not a number");
-                if number > todo_list.list.len() {
-                    panic!("{} is not a valid task", number);
-                } else {
-                    todo_list.mark_undone(number);
-                }
+            "undone" => {
+                match todo_list.ask_mark_undone(){
+                    Ok(string) => println!("{string}"),
+                    Err(e) => println!("{e}"),
+                };
                 file.set_len(0)?;
             }
             "pending" => {
-                println!("Enter the number of task to mark as pending:");
-                let mut input = String::new();
-                io::stdin()
-                    .read_line(&mut input)
-                    .expect("Please enter a valid text.");
-                let number:usize = input.trim().parse().expect("Input not a number");
-                if number > todo_list.list.len() {
-                    panic!("{} is not a valid task", number);
-                } else {
-                    todo_list.mark_pending(number);
-                }
+                match todo_list.ask_mark_pending(){
+                    Ok(string) => println!("{string}"),
+                    Err(e) => println!("{e}"),
+                };
                 file.set_len(0)?;
             }
             "list" => {
@@ -120,7 +85,8 @@ fn main() -> io::Result<()> {
                 todo_list.print();
             }
             _ => {
-                panic!("You must provide an accepted command")
+                help();
+                panic!("You must provide an accepted command");
             }
         },
         // One command and one argument
@@ -160,4 +126,27 @@ fn main() -> io::Result<()> {
     }
     serde_json::to_writer(file, &todo_list)?;
     Ok(())
+}
+
+fn welcome() {
+    println!("\nWelcome to todo CLI app!");
+    println!("'todo' was developed in the course of learning rust by USpiri");
+}
+
+fn help() {
+    println!("\nList of available commands:");
+    println!("     add <'task description'>:     add a new task");
+    println!("     remove <task number>:         remove task number n");
+    println!("     done <task number>:           mark task number n as done");
+    println!("     undone <task number>:         mark task number n as undone");
+    println!("     pending <task number>:        mark task number n as pending");
+    println!("     list:                         list all tasks in numeric order");
+    println!("     list-done:                    list all tasks marked as done");
+    println!("     list-undone:                  list all tasks marked as undone");
+    println!("     list-pending:                 list all tasks marked as pending");
+    println!("     list-all:                     list all tasks by category");
+    println!("\nUSAGE: \n   todo [command] <argument>");
+    println!("\nThe text inside '< >' marks is optional");
+    println!("Task description must have double quotation marks, it is not necessary for 'task number'\n");
+    println!("For more information please visit: https://www.google.com/\n")
 }

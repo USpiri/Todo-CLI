@@ -1,5 +1,5 @@
-use std::{fmt};
 use serde::{Deserialize, Serialize};
+use std::{fmt, io};
 
 #[derive(PartialEq, Eq, Serialize, Deserialize)]
 pub enum TodoItemStatus {
@@ -35,7 +35,7 @@ impl TodoList {
             self.list[index].status = TodoItemStatus::Undone
         }
     }
-    pub fn mark_undone (&mut self, index:usize){
+    pub fn mark_undone(&mut self, index: usize) {
         if self.list[index].status == TodoItemStatus::Undone {
             println!("Task currently undone")
         } else {
@@ -110,6 +110,86 @@ impl TodoList {
             .filter(|&item| item.status == status)
             .collect();
         ordered
+    }
+    pub fn ask_add_to_list(&mut self) -> Result<String, String> {
+        println!("Enter your new task:");
+        let mut input = String::new();
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Please enter a valid Text");
+        if input.trim().chars().count() == 0 {
+            return Err("You must provide some text".to_string());
+        }
+        self.add_to_list(input);
+        Ok("Task ".to_string() + &self.list.len().to_string() + " added successfully")
+    }
+    pub fn ask_remove_task(&mut self) -> Result<String, String> {
+        println!("Enter the number of task to remove:");
+        let mut input = String::new();
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Please enter a valid number.");
+        let number: usize = match input.trim().parse() {
+            Ok(number) => number,
+            Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+        };
+        if number >= self.list.len() {
+            return Err(number.to_string() + " is not a valid task, please list tasks to see what numbers are available");
+        } else {
+           self.remove_task(number);
+        }
+        Ok("Task removed".to_string())
+    }
+    pub fn ask_mark_done(&mut self) -> Result<String, String> {
+        println!("Enter the number of task to mark as done:");
+        let mut input = String::new();
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Please enter a valid number.");
+        let number: usize = match input.trim().parse() {
+            Ok(number) => number,
+            Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+        };
+        if number >= self.list.len() {
+            return Err(number.to_string() + " is not a valid task, please list tasks to see what numbers are available");
+        } else {
+           self.mark_done(number);
+        }
+        Ok("Task marked as done".to_string())
+    }
+    pub fn ask_mark_undone(&mut self) -> Result<String, String> {
+        println!("Enter the number of task to mark as undone:");
+        let mut input = String::new();
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Please enter a valid number.");
+        let number: usize = match input.trim().parse() {
+            Ok(number) => number,
+            Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+        };
+        if number >= self.list.len() {
+            return Err(number.to_string() + " is not a valid task, please list tasks to see what numbers are available");
+        } else {
+           self.mark_undone(number);
+        }
+        Ok("Task marked as undone".to_string())
+    }
+    pub fn ask_mark_pending(&mut self) -> Result<String, String> {
+        println!("Enter the number of task to mark as pending:");
+        let mut input = String::new();
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Please enter a valid number.");
+        let number: usize = match input.trim().parse() {
+            Ok(number) => number,
+            Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+        };
+        if number >= self.list.len() {
+            return Err(number.to_string() + " is not a valid task, please list tasks to see what numbers are available");
+        } else {
+           self.mark_pending(number);
+        }
+        Ok("Task marked as pending".to_string())
     }
 }
 
