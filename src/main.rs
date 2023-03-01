@@ -177,9 +177,14 @@ fn help() {
     println!("\nList of available commands:");
     println!("     add <'task description'>:     add a new task");
     println!("     remove <task number>:         remove task number n");
+    println!("     remove-all:                   delete all tasks");
     println!("     done <task number>:           mark task number n as done");
     println!("     undone <task number>:         mark task number n as undone");
     println!("     pending <task number>:        mark task number n as pending");
+    println!("     all-done:                     mark all tasks as done");
+    println!("     all-undone:                   mark all tasks as undone");
+    println!("     all-pending:                  mark all tasks as pending");
+    println!("     task <task number>:           print specific task");
     println!("     list:                         list all tasks in numeric order");
     println!("     list-done:                    list all tasks marked as done");
     println!("     list-undone:                  list all tasks marked as undone");
