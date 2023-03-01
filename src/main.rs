@@ -2,7 +2,7 @@ mod todo;
 use std::env;
 use std::fs::OpenOptions;
 use std::io::{self, Seek, SeekFrom};
-use todo::TodoList;
+use todo::{TodoList, TodoItemStatus};
 
 fn main() -> io::Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -84,6 +84,22 @@ fn main() -> io::Result<()> {
                 println!("New ordered list:");
                 todo_list.print();
             }
+            "all-done" => {
+                todo_list.mark_all_as(TodoItemStatus::Done);
+                file.set_len(0)?;
+            }
+            "all-undone" => {
+                todo_list.mark_all_as(TodoItemStatus::Undone);
+                file.set_len(0)?;
+            }
+            "all-pending" => {
+                todo_list.mark_all_as(TodoItemStatus::Pending);
+                file.set_len(0)?;
+            }
+            "remove-all" => {
+                todo_list = TodoList::new();
+                file.set_len(0)?;
+            }
             "help" => help(),
             _ => {
                 help();
@@ -96,8 +112,8 @@ fn main() -> io::Result<()> {
                 todo_list.add_to_list(args[2].to_string());
             }
             "remove" => {
-                let number = args[2].parse().expect("Error converting integer");
-                if number > todo_list.list.len() {
+                let number:usize = args[2].parse().expect("Error converting integer");
+                if number >= todo_list.list.len() {
                     panic!("{} is not a valid task", number);
                 } else {
                     todo_list.remove_task(number);
@@ -105,16 +121,39 @@ fn main() -> io::Result<()> {
                 file.set_len(0)?;
             }
             "done" => {
-                todo_list.mark_done(args[2].parse().expect("Error converting integer"));
+                let number:usize = args[2].parse().expect("Error converting integer");
+                if number >= todo_list.list.len() {
+                    panic!("{} is not a valid task", number);
+                } else {
+                    todo_list.mark_done(args[2].parse().expect("Error converting integer"));
+                }
                 file.set_len(0)?;
             }
             "undone" => {
-                todo_list.mark_undone(args[2].parse().expect("Error converting integer"));
+                let number:usize = args[2].parse().expect("Error converting integer");
+                if number >= todo_list.list.len() {
+                    panic!("{} is not a valid task", number);
+                } else {
+                    todo_list.mark_undone(args[2].parse().expect("Error converting integer"));
+                }
                 file.set_len(0)?;
             }
             "pending" => {
-                todo_list.mark_pending(args[2].parse().expect("Error converting integer"));
+                let number:usize = args[2].parse().expect("Error converting integer");
+                if number >= todo_list.list.len() {
+                    panic!("{} is not a valid task", number);
+                } else {
+                    todo_list.mark_pending(args[2].parse().expect("Error converting integer"));
+                }
                 file.set_len(0)?;
+            }
+            "task" => {
+                let number:usize = args[2].parse().expect("Error converting integer");
+                if number >= todo_list.list.len() {
+                    panic!("{} is not a valid task", number);
+                } else {
+                    todo_list.print_task(number);
+                }
             }
             _ => {
                 panic!("You must provide an accepted command")
@@ -131,7 +170,7 @@ fn main() -> io::Result<()> {
 
 fn welcome() {
     println!("\nWelcome to todo CLI app!");
-    println!("'todo' was developed in the course of learning rust by USpiri");
+    println!("'todo-cli' was developed in the course of learning rust by USpiri");
 }
 
 fn help() {
@@ -149,5 +188,5 @@ fn help() {
     println!("\nUSAGE: \n     todo [command] <argument>");
     println!("\nThe text inside '< >' marks is optional");
     println!("Task description must have double quotation marks, it is not necessary for 'task number'\n");
-    println!("For more information please visit: https://www.google.com/\n")
+    println!("For more information please visit: https://github.com/USpiri/Todo-CLI\n")
 }

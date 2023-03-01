@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::{fmt, io};
 
-#[derive(PartialEq, Eq, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Serialize, Deserialize, Copy, Clone)]
 pub enum TodoItemStatus {
     Done,
     Undone,
@@ -17,15 +17,18 @@ impl TodoList {
     pub fn new() -> TodoList {
         TodoList { list: Vec::new() }
     }
+
     pub fn add_to_list(&mut self, name: String) {
         let todo_item = TodoItem::new(name);
         self.list.push(todo_item);
     }
+
     pub fn print(&self) {
         for (index, item) in self.list.iter().enumerate() {
             println!("{}. [ {:?} ] - {}", index, item.status, item.name)
         }
     }
+
     pub fn mark_done(&mut self, index: usize) {
         if self.list[index].status == TodoItemStatus::Undone
             || self.list[index].status == TodoItemStatus::Pending
@@ -35,6 +38,7 @@ impl TodoList {
             self.list[index].status = TodoItemStatus::Undone
         }
     }
+
     pub fn mark_undone(&mut self, index: usize) {
         if self.list[index].status == TodoItemStatus::Undone {
             println!("Task currently undone")
@@ -42,6 +46,7 @@ impl TodoList {
             self.list[index].status = TodoItemStatus::Undone
         }
     }
+
     pub fn mark_pending(&mut self, index: usize) {
         if self.list[index].status == TodoItemStatus::Pending {
             println!("Task currently pending")
@@ -49,9 +54,11 @@ impl TodoList {
             self.list[index].status = TodoItemStatus::Pending
         }
     }
+
     pub fn remove_task(&mut self, index: usize) {
         self.list.remove(index);
     }
+
     pub fn print_list_done(&self) {
         println!("DONE TASKS:");
         for (index, item) in self.list.iter().enumerate() {
@@ -60,6 +67,7 @@ impl TodoList {
             }
         }
     }
+
     pub fn print_list_undone(&self) {
         println!("UNDONE TASKS:");
         for (index, item) in self.list.iter().enumerate() {
@@ -68,6 +76,7 @@ impl TodoList {
             }
         }
     }
+
     pub fn print_list_pending(&self) {
         println!("PENDING TASKS:");
         for (index, item) in self.list.iter().enumerate() {
@@ -76,11 +85,13 @@ impl TodoList {
             }
         }
     }
+
     pub fn print_all(&self) {
         self.print_list_done();
         self.print_list_undone();
         self.print_list_pending();
     }
+
     pub fn order_list(&mut self) {
         let mut ordered_list: TodoList = TodoList::new();
         for item in self.get_filtered_items_by_status(TodoItemStatus::Undone) {
@@ -103,6 +114,7 @@ impl TodoList {
         }
         self.list = ordered_list.list;
     }
+
     fn get_filtered_items_by_status(&self, status: TodoItemStatus) -> Vec<&TodoItem> {
         let ordered = self
             .list
@@ -111,6 +123,7 @@ impl TodoList {
             .collect();
         ordered
     }
+
     pub fn ask_add_to_list(&mut self) -> Result<String, String> {
         println!("Enter your new task:");
         let mut input = String::new();
@@ -123,6 +136,7 @@ impl TodoList {
         self.add_to_list(input);
         Ok("Task ".to_string() + &self.list.len().to_string() + " added successfully")
     }
+
     pub fn ask_remove_task(&mut self) -> Result<String, String> {
         println!("Enter the number of task to remove:");
         let mut input = String::new();
@@ -134,12 +148,14 @@ impl TodoList {
             Err(_) => return Err("Error: Please enter a valid number.".to_string()),
         };
         if number >= self.list.len() {
-            return Err(number.to_string() + " is not a valid task, please list tasks to see what numbers are available");
+            return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
         } else {
-           self.remove_task(number);
+            self.remove_task(number);
         }
         Ok("Task removed".to_string())
     }
+
     pub fn ask_mark_done(&mut self) -> Result<String, String> {
         println!("Enter the number of task to mark as done:");
         let mut input = String::new();
@@ -151,12 +167,14 @@ impl TodoList {
             Err(_) => return Err("Error: Please enter a valid number.".to_string()),
         };
         if number >= self.list.len() {
-            return Err(number.to_string() + " is not a valid task, please list tasks to see what numbers are available");
+            return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
         } else {
-           self.mark_done(number);
+            self.mark_done(number);
         }
         Ok("Task marked as done".to_string())
     }
+
     pub fn ask_mark_undone(&mut self) -> Result<String, String> {
         println!("Enter the number of task to mark as undone:");
         let mut input = String::new();
@@ -168,12 +186,14 @@ impl TodoList {
             Err(_) => return Err("Error: Please enter a valid number.".to_string()),
         };
         if number >= self.list.len() {
-            return Err(number.to_string() + " is not a valid task, please list tasks to see what numbers are available");
+            return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
         } else {
-           self.mark_undone(number);
+            self.mark_undone(number);
         }
         Ok("Task marked as undone".to_string())
     }
+
     pub fn ask_mark_pending(&mut self) -> Result<String, String> {
         println!("Enter the number of task to mark as pending:");
         let mut input = String::new();
@@ -185,11 +205,22 @@ impl TodoList {
             Err(_) => return Err("Error: Please enter a valid number.".to_string()),
         };
         if number >= self.list.len() {
-            return Err(number.to_string() + " is not a valid task, please list tasks to see what numbers are available");
+            return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
         } else {
-           self.mark_pending(number);
+            self.mark_pending(number);
         }
         Ok("Task marked as pending".to_string())
+    }
+
+    pub fn mark_all_as(&mut self, status: TodoItemStatus) {
+        for task in self.list.iter_mut() {
+            task.status = status;
+        }
+    }
+
+    pub fn print_task(&self, index: usize) {
+        println!("{}. [ {:?} ] - {}", index, self.list[index].status, self.list[index].name)
     }
 }
 
