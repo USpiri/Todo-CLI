@@ -1,3 +1,5 @@
+# Todo - CLI Rust Program
+
 A simple command-line todo list written in Rust.
 
 ![todo-cli](todo-cli.gif)
