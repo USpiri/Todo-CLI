@@ -231,7 +231,7 @@ fn main() -> io::Result<()> {
                         "categorized" => {
                             todo_list.print_categorized();
                         }
-                        "order" => {
+                        "sort" | "order" => {
                             todo_list.order_list();
                             println!("New ordered list:");
                             todo_list.print();
