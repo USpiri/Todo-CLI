@@ -320,5 +320,5 @@ fn help() {
 
 fn version(){
     const VERSION: &str = env!("CARGO_PKG_VERSION");
-    println!("\ntodo cli version: {VERSION}");
+    println!("todo cli version: {VERSION}");
 }
