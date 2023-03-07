@@ -1,6 +1,6 @@
 A simple command-line todo list written in Rust.
 
-INSERT GIF
+![todo-cli](todo-cli.gif)
 
 ## Usage
 
