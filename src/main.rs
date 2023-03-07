@@ -45,7 +45,7 @@ fn main() -> io::Result<()> {
                     }
                 }
             }
-            "remove" => {
+            "remove" | "rm" => {
                 if arguments.len() == 0 {
                     match todo_list.remove(None) {
                         Ok(string) => println!("{string}"),
@@ -211,7 +211,7 @@ fn main() -> io::Result<()> {
                 }
                 file.set_len(0)?;
             }
-            "list" => {
+            "list" | "ls" => {
                 if arguments.len() == 0 {
                     todo_list.print();
                 } else {
@@ -243,7 +243,7 @@ fn main() -> io::Result<()> {
                     }
                 }
             }
-            "task" => {
+            "task" | "get" => {
                 if arguments.len() == 0 {
                     match todo_list.get(None) {
                         Ok(_) => print!(""),
@@ -274,7 +274,7 @@ fn main() -> io::Result<()> {
                 println!("TODO");
                 file.set_len(0)?;
             }
-            "help" => help(),
+            "help" | "-h" | "--help" => help(),
             _ => {
                 println!("Unkown command. Please see the list of available commands");
                 help();
