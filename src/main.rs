@@ -53,7 +53,7 @@ fn main() -> io::Result<()> {
                     };
                 } else {
                     match arguments[0].as_str() {
-                        "--all" => {
+                        "--all" | "." | "*" => {
                             todo_list.remove_all();
                         }
                         "--last" => {
@@ -96,7 +96,7 @@ fn main() -> io::Result<()> {
                     };
                 } else {
                     match arguments[0].as_str() {
-                        "--all" => {
+                        "--all" | "." | "*" => {
                             todo_list.done_all();
                         }
                         "--last" => {
@@ -137,7 +137,7 @@ fn main() -> io::Result<()> {
                     };
                 } else {
                     match arguments[0].as_str() {
-                        "--all" => {
+                        "--all" | "." | "*" => {
                             todo_list.undone_all();
                         }
                         "--last" => {
@@ -178,7 +178,7 @@ fn main() -> io::Result<()> {
                     };
                 } else {
                     match arguments[0].as_str() {
-                        "--all" => {
+                        "--all" | "." | "*" => {
                             todo_list.pending_all();
                         }
                         "--last" => {
@@ -216,7 +216,7 @@ fn main() -> io::Result<()> {
                     todo_list.print();
                 } else {
                     match arguments[0].as_str() {
-                        "all" => {
+                        "all" | "." | "*" => {
                             todo_list.print();
                         }
                         "done" => {
