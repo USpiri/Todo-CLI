@@ -138,11 +138,11 @@ Print the todo list. `list sort` sort tasks by status. Alternative: "ls".
 ```
 > todo list
 
-0. [ ✔️  ] - Adding
-1. [ ✖️  ] - Multiple tasks
+0. [ ✔️ ] - Adding
+1. [ ✖️ ] - Multiple tasks
 2. [ ➖ ] - example
-3. [ ✔️  ] - Adding
-4. [ ✖️  ] - Multiple tasks
+3. [ ✔️ ] - Adding
+4. [ ✖️ ] - Multiple tasks
 5. [ ➖ ] - example
 ```
 
@@ -150,11 +150,11 @@ Print the todo list. `list sort` sort tasks by status. Alternative: "ls".
 > todo list categorized
 
 "DONE" TASKS:
-0. [ ✔️  ] - Adding
-3. [ ✔️  ] - Adding
+0. [ ✔️ ] - Adding
+3. [ ✔️ ] - Adding
 "UNDONE" TASKS:
-1. [ ✖️  ] - Multiple tasks
-4. [ ✖️  ] - Multiple tasks
+1. [ ✖️ ] - Multiple tasks
+4. [ ✖️ ] - Multiple tasks
 "PENDING" TASKS:
 2. [ ➖ ] - example
 5. [ ➖ ] - example
@@ -164,12 +164,12 @@ Print the todo list. `list sort` sort tasks by status. Alternative: "ls".
 > todo list sort
 
 New ordered list:
-0. [ ✖️  ] - Multiple tasks
-1. [ ✖️  ] - Multiple tasks
+0. [ ✖️ ] - Multiple tasks
+1. [ ✖️ ] - Multiple tasks
 2. [ ➖ ] - example
 3. [ ➖ ] - example
-4. [ ✔️  ] - Adding
-5. [ ✔️  ] - Adding
+4. [ ✔️ ] - Adding
+5. [ ✔️ ] - Adding
 ```
 
 ### edit
