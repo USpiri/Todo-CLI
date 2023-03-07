@@ -275,6 +275,7 @@ fn main() -> io::Result<()> {
                 file.set_len(0)?;
             }
             "help" | "-h" | "--help" => help(),
+            "version" | "-v" | "--version" => version(),
             _ => {
                 println!("Unkown command. Please see the list of available commands");
                 help();
@@ -315,4 +316,9 @@ fn help() {
     println!("\nThe text inside '< >' marks is optional");
     println!("Task description must have double quotation marks, it is not necessary for 'task number'\n");
     println!("For more information please visit: https://github.com/USpiri/Todo-CLI\n")
+}
+
+fn version(){
+    const VERSION: &str = env!("CARGO_PKG_VERSION");
+    println!("\ntodo cli version: {VERSION}");
 }
