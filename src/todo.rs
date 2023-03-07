@@ -370,8 +370,8 @@ impl fmt::Display for TodoItemStatus {
 impl fmt::Debug for TodoItemStatus {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self {
-            Self::Done => write!(f, "{}", "✔️ "),
-            Self::Undone => write!(f, "{}", "✖️ "),
+            Self::Done => write!(f, "{}", "✔️"),
+            Self::Undone => write!(f, "{}", "✖️"),
             _ => write!(f, "{}", "➖"),
         }
     }
