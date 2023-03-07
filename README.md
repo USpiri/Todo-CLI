@@ -10,6 +10,8 @@ A simple command-line todo list written in Rust.
 todo <COMMAND> [ARGUMENTS]
 ```
 
+For example `todo` will print the welcome and help messages.
+
 ### add
 
 Add new task to the list.   
