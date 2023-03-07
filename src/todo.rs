@@ -24,27 +24,20 @@ impl TodoList {
         }
     }
 
-    pub fn print_task(&self, index: usize) {
-        println!(
-            "{}. [ {:?} ] - {}",
-            index, self.list[index].status, self.list[index].name
-        )
-    }
-
     fn mark_all(&mut self, status: TodoItemStatus) {
         for task in self.list.iter_mut() {
             task.status = status;
         }
     }
 
-    pub fn get(&mut self, index: Option<usize>) -> Result<usize, String> {
+    pub fn get(&mut self, index: Option<usize>) -> Result<String, String> {
         match index {
             Some(index) => {
                 if index >= self.list.len() {
                     return Err(index.to_string()
                     + " is not a valid task, please list tasks to see what numbers are available");
                 }
-                Ok(index)
+                Ok( index.to_string() + ". " + &self.list[index].to_string())
             }
 
             None => {
@@ -66,7 +59,7 @@ impl TodoList {
                 + " is not a valid task, please list tasks to see what numbers are available");
                 }
                 match self.get(Some(number)) {
-                    Ok(index) => return Ok(index),
+                    Ok(string) => return Ok(string),
                     Err(_) => return Err("Error getting task ".to_string() + &number.to_string()),
                 }
             }
@@ -355,6 +348,12 @@ impl TodoItem {
             name: name,
             status: TodoItemStatus::Undone,
         }
+    }
+}
+
+impl fmt::Display for TodoItem {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[ {:?} ] - {}", self.status, self.name)
     }
 }
 

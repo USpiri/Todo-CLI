@@ -246,7 +246,10 @@ fn main() -> io::Result<()> {
             "task" | "get" => {
                 if arguments.len() == 0 {
                     match todo_list.get(None) {
-                        Ok(_) => print!(""),
+                        Ok(task) => {
+                            println!("Task found successfully:");
+                            print!("{task}");
+                        },
                         Err(e) => println!("{e}"),
                     };
                 } else {
@@ -259,11 +262,11 @@ fn main() -> io::Result<()> {
                     }
                     for (i, task) in order.iter().enumerate() {
                         match todo_list.get(Some(task.to_owned())) {
-                            Ok(index) => {
+                            Ok(task) => {
                                 if i == 0 {
                                     println!("Task/s found successfully:")
                                 }
-                                todo_list.print_task(index);
+                                println!("{task}");
                             }
                             Err(e) => println!("{e}"),
                         };
