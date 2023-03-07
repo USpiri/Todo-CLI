@@ -18,75 +18,292 @@ impl TodoList {
         TodoList { list: Vec::new() }
     }
 
-    pub fn add_to_list(&mut self, name: String) {
-        let todo_item = TodoItem::new(name);
-        self.list.push(todo_item);
-    }
-
     pub fn print(&self) {
         for (index, item) in self.list.iter().enumerate() {
             println!("{}. [ {:?} ] - {}", index, item.status, item.name)
         }
     }
 
-    pub fn mark_done(&mut self, index: usize) {
-        if self.list[index].status == TodoItemStatus::Undone
-            || self.list[index].status == TodoItemStatus::Pending
-        {
-            self.list[index].status = TodoItemStatus::Done
-        } else {
-            self.list[index].status = TodoItemStatus::Undone
+    pub fn print_task(&self, index: usize) {
+        println!(
+            "{}. [ {:?} ] - {}",
+            index, self.list[index].status, self.list[index].name
+        )
+    }
+
+    fn mark_all(&mut self, status: TodoItemStatus) {
+        for task in self.list.iter_mut() {
+            task.status = status;
         }
     }
 
-    pub fn mark_undone(&mut self, index: usize) {
-        if self.list[index].status == TodoItemStatus::Undone {
-            println!("Task currently undone")
-        } else {
-            self.list[index].status = TodoItemStatus::Undone
+    pub fn get(&mut self, index: Option<usize>) -> Result<usize, String> {
+        match index {
+            Some(index) => {
+                if index >= self.list.len() {
+                    return Err(index.to_string()
+                    + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                Ok(index)
+            }
+
+            None => {
+                println!("Enter the number of task you want:");
+                let mut input = String::new();
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => (),
+                    Err(_) => return Err("Error getting arguments".to_string()),
+                }
+                if input.trim().chars().count() == 0 {
+                    return Err("You must provide some number".to_string());
+                }
+                let number: usize = match input.trim().parse() {
+                    Ok(number) => number,
+                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+                };
+                if number >= self.list.len() {
+                    return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                match self.get(Some(number)) {
+                    Ok(index) => return Ok(index),
+                    Err(_) => return Err("Error getting task ".to_string() + &number.to_string()),
+                }
+            }
         }
     }
 
-    pub fn mark_pending(&mut self, index: usize) {
-        if self.list[index].status == TodoItemStatus::Pending {
-            println!("Task currently pending")
-        } else {
-            self.list[index].status = TodoItemStatus::Pending
+    pub fn add(&mut self, name: Option<String>) -> Result<String, String> {
+        match name {
+            Some(name) => {
+                let todo_item = TodoItem::new(name.to_string());
+                self.list.push(todo_item);
+                Ok(name)
+            }
+
+            None => {
+                println!("Enter your new task:");
+                let mut input = String::new();
+
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => (),
+                    Err(_) => return Err("Error gettong arguments".to_string()),
+                }
+                if input.trim().chars().count() == 0 {
+                    return Err("You must provide some text".to_string());
+                }
+                match self.add(Some(input.to_string())) {
+                    Ok(name) => return Ok(name),
+                    Err(_) => return Err("Error adding task".to_string()),
+                }
+            }
         }
     }
 
-    pub fn remove_task(&mut self, index: usize) {
-        self.list.remove(index);
+    pub fn remove(&mut self, index: Option<usize>) -> Result<usize, String> {
+        match index {
+            Some(index) => {
+                if index >= self.list.len() {
+                    return Err(index.to_string()
+                        + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                self.list.remove(index);
+                Ok(index)
+            }
+
+            None => {
+                println!("Enter the number of task to remove:");
+                let mut input = String::new();
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => (),
+                    Err(_) => return Err("Error gettong arguments".to_string()),
+                }
+                if input.trim().chars().count() == 0 {
+                    return Err("You must provide some number".to_string());
+                }
+                let number: usize = match input.trim().parse() {
+                    Ok(number) => number,
+                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+                };
+                if number >= self.list.len() {
+                    return Err(number.to_string()
+                        + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                match self.remove(Some(number)) {
+                    Ok(index) => return Ok(index),
+                    Err(_) => return Err("Error removing task ".to_string() + &number.to_string()),
+                }
+            }
+        }
+    }
+
+    pub fn remove_all(&mut self) {
+        self.list = Vec::new();
+        println!("All tasks have been removed")
+    }
+
+    pub fn done(&mut self, index: Option<usize>) -> Result<usize, String> {
+        match index {
+            Some(index) => {
+                if index >= self.list.len() {
+                    return Err(index.to_string()
+                    + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                if self.list[index].status == TodoItemStatus::Undone
+                    || self.list[index].status == TodoItemStatus::Pending
+                {
+                    self.list[index].status = TodoItemStatus::Done
+                } else {
+                    self.list[index].status = TodoItemStatus::Undone
+                }
+                Ok(index)
+            }
+
+            None => {
+                println!("Enter the number of task to mark as done:");
+                let mut input = String::new();
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => (),
+                    Err(_) => return Err("Error getting arguments".to_string()),
+                }
+                if input.trim().chars().count() == 0 {
+                    return Err("You must provide some number".to_string());
+                }
+                let number: usize = match input.trim().parse() {
+                    Ok(number) => number,
+                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+                };
+                if number >= self.list.len() {
+                    return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                match self.done(Some(number)) {
+                    Ok(index) => return Ok(index),
+                    Err(_) => return Err("Error marking task ".to_string() + &number.to_string()),
+                }
+            }
+        }
+    }
+
+    pub fn done_all(&mut self) {
+        self.mark_all(TodoItemStatus::Done);
+        println!("All tasks have been marked as 'Done'")
+    }
+
+    pub fn undone(&mut self, index: Option<usize>) -> Result<usize, String> {
+        match index {
+            Some(index) => {
+                if index >= self.list.len() {
+                    return Err(index.to_string()
+                        + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                if self.list[index].status == TodoItemStatus::Undone {
+                    println!("Task currently undone")
+                } else {
+                    self.list[index].status = TodoItemStatus::Undone
+                }
+                Ok(index)
+            }
+
+            None => {
+                println!("Enter the number of task to mark as undone:");
+                let mut input = String::new();
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => (),
+                    Err(_) => return Err("Error getting arguments".to_string()),
+                }
+                if input.trim().chars().count() == 0 {
+                    return Err("You must provide some number".to_string());
+                }
+                let number: usize = match input.trim().parse() {
+                    Ok(number) => number,
+                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+                };
+                if number >= self.list.len() {
+                    return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                match self.done(Some(number)) {
+                    Ok(index) => return Ok(index),
+                    Err(_) => return Err("Error marking task ".to_string() + &number.to_string()),
+                }
+            }
+        }
+    }
+
+    pub fn undone_all(&mut self) {
+        self.mark_all(TodoItemStatus::Undone);
+        println!("All tasks have been marked as 'Undone'")
+    }
+
+    pub fn pending(&mut self, index: Option<usize>) -> Result<usize, String> {
+        match index {
+            Some(index) => {
+                if index >= self.list.len() {
+                    return Err(index.to_string()
+                        + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                if self.list[index].status == TodoItemStatus::Pending {
+                    println!("Task currently pending")
+                } else {
+                    self.list[index].status = TodoItemStatus::Pending
+                }
+                Ok(index)
+            }
+
+            None => {
+                println!("Enter the number of task to mark as pending:");
+                let mut input = String::new();
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => (),
+                    Err(_) => return Err("Error getting arguments".to_string()),
+                }
+                if input.trim().chars().count() == 0 {
+                    return Err("You must provide some number".to_string());
+                }
+                let number: usize = match input.trim().parse() {
+                    Ok(number) => number,
+                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+                };
+                if number >= self.list.len() {
+                    return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                match self.pending(Some(number)) {
+                    Ok(index) => return Ok(index),
+                    Err(_) => return Err("Error marking task ".to_string() + &number.to_string()),
+                }
+            }
+        }
+    }
+ 
+    pub fn pending_all(&mut self) {
+        self.mark_all(TodoItemStatus::Pending);
+        println!("All tasks have been marked as 'Pending'")
+    }
+
+    fn print_list(&self, status: TodoItemStatus) {
+        println!("{:?} TASKS:", status.to_string().to_uppercase());
+        for (index, item) in self.list.iter().enumerate() {
+            if item.status == status {
+                println!("{}. [ {:?} ] - {}", index, item.status, item.name)
+            }
+        }
     }
 
     pub fn print_list_done(&self) {
-        println!("DONE TASKS:");
-        for (index, item) in self.list.iter().enumerate() {
-            if item.status == TodoItemStatus::Done {
-                println!("{}. [ {:?} ] - {}", index, item.status, item.name)
-            }
-        }
+        self.print_list(TodoItemStatus::Done);
     }
 
     pub fn print_list_undone(&self) {
-        println!("UNDONE TASKS:");
-        for (index, item) in self.list.iter().enumerate() {
-            if item.status == TodoItemStatus::Undone {
-                println!("{}. [ {:?} ] - {}", index, item.status, item.name)
-            }
-        }
+        self.print_list(TodoItemStatus::Undone);
     }
 
     pub fn print_list_pending(&self) {
-        println!("PENDING TASKS:");
-        for (index, item) in self.list.iter().enumerate() {
-            if item.status == TodoItemStatus::Pending {
-                println!("{}. [ {:?} ] - {}", index, item.status, item.name)
-            }
-        }
+        self.print_list(TodoItemStatus::Pending);
     }
 
-    pub fn print_all(&self) {
+    pub fn print_categorized(&self) {
         self.print_list_done();
         self.print_list_undone();
         self.print_list_pending();
@@ -124,104 +341,6 @@ impl TodoList {
         ordered
     }
 
-    pub fn ask_add_to_list(&mut self) -> Result<String, String> {
-        println!("Enter your new task:");
-        let mut input = String::new();
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Please enter a valid Text");
-        if input.trim().chars().count() == 0 {
-            return Err("You must provide some text".to_string());
-        }
-        self.add_to_list(input);
-        Ok("Task ".to_string() + &self.list.len().to_string() + " added successfully")
-    }
-
-    pub fn ask_remove_task(&mut self) -> Result<String, String> {
-        println!("Enter the number of task to remove:");
-        let mut input = String::new();
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Please enter a valid number.");
-        let number: usize = match input.trim().parse() {
-            Ok(number) => number,
-            Err(_) => return Err("Error: Please enter a valid number.".to_string()),
-        };
-        if number >= self.list.len() {
-            return Err(number.to_string()
-                + " is not a valid task, please list tasks to see what numbers are available");
-        } else {
-            self.remove_task(number);
-        }
-        Ok("Task removed".to_string())
-    }
-
-    pub fn ask_mark_done(&mut self) -> Result<String, String> {
-        println!("Enter the number of task to mark as done:");
-        let mut input = String::new();
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Please enter a valid number.");
-        let number: usize = match input.trim().parse() {
-            Ok(number) => number,
-            Err(_) => return Err("Error: Please enter a valid number.".to_string()),
-        };
-        if number >= self.list.len() {
-            return Err(number.to_string()
-                + " is not a valid task, please list tasks to see what numbers are available");
-        } else {
-            self.mark_done(number);
-        }
-        Ok("Task marked as done".to_string())
-    }
-
-    pub fn ask_mark_undone(&mut self) -> Result<String, String> {
-        println!("Enter the number of task to mark as undone:");
-        let mut input = String::new();
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Please enter a valid number.");
-        let number: usize = match input.trim().parse() {
-            Ok(number) => number,
-            Err(_) => return Err("Error: Please enter a valid number.".to_string()),
-        };
-        if number >= self.list.len() {
-            return Err(number.to_string()
-                + " is not a valid task, please list tasks to see what numbers are available");
-        } else {
-            self.mark_undone(number);
-        }
-        Ok("Task marked as undone".to_string())
-    }
-
-    pub fn ask_mark_pending(&mut self) -> Result<String, String> {
-        println!("Enter the number of task to mark as pending:");
-        let mut input = String::new();
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Please enter a valid number.");
-        let number: usize = match input.trim().parse() {
-            Ok(number) => number,
-            Err(_) => return Err("Error: Please enter a valid number.".to_string()),
-        };
-        if number >= self.list.len() {
-            return Err(number.to_string()
-                + " is not a valid task, please list tasks to see what numbers are available");
-        } else {
-            self.mark_pending(number);
-        }
-        Ok("Task marked as pending".to_string())
-    }
-
-    pub fn mark_all_as(&mut self, status: TodoItemStatus) {
-        for task in self.list.iter_mut() {
-            task.status = status;
-        }
-    }
-
-    pub fn print_task(&self, index: usize) {
-        println!("{}. [ {:?} ] - {}", index, self.list[index].status, self.list[index].name)
-    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -235,6 +354,16 @@ impl TodoItem {
         TodoItem {
             name: name,
             status: TodoItemStatus::Undone,
+        }
+    }
+}
+
+impl fmt::Display for TodoItemStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            TodoItemStatus::Done => write!(f, "Done"),
+            TodoItemStatus::Undone => write!(f, "Undone"),
+            TodoItemStatus::Pending => write!(f, "Pending"),
         }
     }
 }
