@@ -45,10 +45,10 @@ fn main() -> io::Result<()> {
                     }
                 }
             }
-            "remove" | "rm" => {
+            "remove" | "rm" | "delete" | "del" => {
                 if arguments.len() == 0 {
                     match todo_list.remove(None) {
-                        Ok(string) => println!("{string}"),
+                        Ok(number) => println!("Task {number} removed successfully"),
                         Err(e) => println!("{e}"),
                     };
                 } else {
