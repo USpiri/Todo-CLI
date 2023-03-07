@@ -91,7 +91,7 @@ fn main() -> io::Result<()> {
             "done" => {
                 if arguments.len() == 0 {
                     match todo_list.done(None) {
-                        Ok(string) => println!("{string}"),
+                        Ok(number) => println!("Task {number} marked as 'done' successfully"),
                         Err(e) => println!("{e}"),
                     };
                 } else {
@@ -101,7 +101,7 @@ fn main() -> io::Result<()> {
                         }
                         "--last" => {
                             match todo_list.done(Some(todo_list.list.len() - 1)) {
-                                Ok(number) => println!("Task {number} have been removed"),
+                                Ok(number) => println!("Task {number} marked as 'done' successfully"),
                                 Err(e) => println!("{e}"),
                             };
                         }
@@ -132,7 +132,7 @@ fn main() -> io::Result<()> {
             "undone" => {
                 if arguments.len() == 0 {
                     match todo_list.undone(None) {
-                        Ok(string) => println!("{string}"),
+                        Ok(number) => println!("Task {number} marked as 'undone' successfully"),
                         Err(e) => println!("{e}"),
                     };
                 } else {
@@ -142,7 +142,7 @@ fn main() -> io::Result<()> {
                         }
                         "--last" => {
                             match todo_list.undone(Some(todo_list.list.len() - 1)) {
-                                Ok(number) => println!("Task {number} have been removed"),
+                                Ok(number) => println!("Task {number} marked as 'undone' successfully"),
                                 Err(e) => println!("{e}"),
                             };
                         }
@@ -158,7 +158,7 @@ fn main() -> io::Result<()> {
                                 match todo_list.undone(Some(task.to_owned())) {
                                     Ok(name) => {
                                         if i == 0 {
-                                            println!("Task/s marked as 'done' successfully:")
+                                            println!("Task/s marked as 'undone' successfully:")
                                         }
                                         println!(" > {name}")
                                     }
@@ -173,7 +173,7 @@ fn main() -> io::Result<()> {
             "pending" => {
                 if arguments.len() == 0 {
                     match todo_list.pending(None) {
-                        Ok(string) => println!("{string}"),
+                        Ok(number) => println!("Task {number} marked as 'pending' successfully"),
                         Err(e) => println!("{e}"),
                     };
                 } else {
@@ -183,7 +183,7 @@ fn main() -> io::Result<()> {
                         }
                         "--last" => {
                             match todo_list.pending(Some(todo_list.list.len() - 1)) {
-                                Ok(number) => println!("Task {number} have been removed"),
+                                Ok(number) => println!("Task {number} marked as 'pending' successfully"),
                                 Err(e) => println!("{e}"),
                             };
                         }
@@ -199,7 +199,7 @@ fn main() -> io::Result<()> {
                                 match todo_list.pending(Some(task.to_owned())) {
                                     Ok(name) => {
                                         if i == 0 {
-                                            println!("Task/s marked as 'done' successfully:")
+                                            println!("Task/s marked as 'pending' successfully:")
                                         }
                                         println!(" > {name}")
                                     }
