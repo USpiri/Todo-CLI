@@ -1,6 +1,6 @@
 [package]
 name = "todo"
-version = "2.1.0"
+version = "2.1.1"
 edition = "2021"
 authors = ["USpiri <urielspiridione135@gmail.com>"]
 description = "A simple command-line todo list written in Rust."
@@ -9,6 +9,7 @@ homepage = "https://github.com/USpiri/todo"
 repository = "https://github.com/USpiri/todo"
 keywords = ["cli", "todo", "todo-app"]
 categories = ["command-line-utilities"]
+license = "GPL-3.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

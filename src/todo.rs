@@ -69,7 +69,7 @@ impl TodoList {
     pub fn add(&mut self, name: Option<String>) -> Result<String, String> {
         match name {
             Some(name) => {
-                let todo_item = TodoItem::new(name.to_string());
+                let todo_item = TodoItem::new(name.trim().to_string());
                 self.list.push(todo_item);
                 Ok(name)
             }
@@ -85,7 +85,7 @@ impl TodoList {
                 if input.trim().chars().count() == 0 {
                     return Err("You must provide some text".to_string());
                 }
-                match self.add(Some(input.to_string())) {
+                match self.add(Some(input.trim().to_string())) {
                     Ok(name) => return Ok(name),
                     Err(_) => return Err("Error adding task".to_string()),
                 }
@@ -152,7 +152,7 @@ impl TodoList {
                 }
                 match content {
                     Some(content) => {
-                        self.list[index].name = content;
+                        self.list[index].name = content.trim().to_string();
                         return Ok(index.to_string() + ". " + &self.list[index].to_string());
                     }
                     None => {
@@ -165,7 +165,7 @@ impl TodoList {
                         if input_content.trim().chars().count() == 0 {
                             return Err("You must provide something".to_string());
                         }
-                        match self.edit(Some(index.to_string()), Some(input_content)) {
+                        match self.edit(Some(index.to_string()), Some(input_content.trim().to_string())) {
                             Ok(item) => return Ok(item),
                             Err(_) => {
                                 return Err("Error editing task ".to_string() + &index.to_string())
@@ -201,7 +201,7 @@ impl TodoList {
                 if input_content.trim().chars().count() == 0 {
                     return Err("You must provide something".to_string());
                 }
-                match self.edit(Some(number.to_string()), Some(input_content)) {
+                match self.edit(Some(number.to_string()), Some(input_content.trim().to_string())) {
                     Ok(item) => return Ok(item),
                     Err(_) => return Err("Error editing task ".to_string() + &number.to_string()),
                 }
