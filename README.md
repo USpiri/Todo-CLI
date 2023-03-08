@@ -179,8 +179,7 @@ New ordered list:
 ### edit
 
 Allows to edit a task.  
-`todo edit [number] [string]`  
-TODO! Not implemented
+`todo edit [number] [string]`
 
 ```
 > todo edit
