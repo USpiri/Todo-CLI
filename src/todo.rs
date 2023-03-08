@@ -135,6 +135,80 @@ impl TodoList {
         println!("All tasks have been removed")
     }
 
+    pub fn edit(
+        &mut self,
+        number: Option<String>,
+        content: Option<String>,
+    ) -> Result<String, String> {
+        match number {
+            Some(number) => {
+                let index: usize = match number.trim().parse() {
+                    Ok(index) => index,
+                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+                };
+                if index >= self.list.len() {
+                    return Err(index.to_string()
+                    + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                match content {
+                    Some(content) => {
+                        self.list[index].name = content;
+                        return Ok(index.to_string() + ". " + &self.list[index].to_string());
+                    }
+                    None => {
+                        println!("Task found successfully.Enter new task content:");
+                        let mut input_content = String::new();
+                        match io::stdin().read_line(&mut input_content) {
+                            Ok(_) => (),
+                            Err(_) => return Err("Error getting arguments".to_string()),
+                        }
+                        if input_content.trim().chars().count() == 0 {
+                            return Err("You must provide something".to_string());
+                        }
+                        match self.edit(Some(index.to_string()), Some(input_content)) {
+                            Ok(item) => return Ok(item),
+                            Err(_) => {
+                                return Err("Error editing task ".to_string() + &index.to_string())
+                            }
+                        }
+                    }
+                }
+            }
+            None => {
+                println!("Enter the number of task you want to edit:");
+                let mut input = String::new();
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => (),
+                    Err(_) => return Err("Error getting arguments".to_string()),
+                }
+                if input.trim().chars().count() == 0 {
+                    return Err("You must provide some number".to_string());
+                }
+                let number: usize = match input.trim().parse() {
+                    Ok(number) => number,
+                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
+                };
+                if number >= self.list.len() {
+                    return Err(number.to_string()
+                + " is not a valid task, please list tasks to see what numbers are available");
+                }
+                println!("Task found successfully.Enter new task content:");
+                let mut input_content = String::new();
+                match io::stdin().read_line(&mut input_content) {
+                    Ok(_) => (),
+                    Err(_) => return Err("Error getting arguments".to_string()),
+                }
+                if input_content.trim().chars().count() == 0 {
+                    return Err("You must provide something".to_string());
+                }
+                match self.edit(Some(number.to_string()), Some(input_content)) {
+                    Ok(item) => return Ok(item),
+                    Err(_) => return Err("Error editing task ".to_string() + &number.to_string()),
+                }
+            }
+        }
+    }
+
     pub fn done(&mut self, index: Option<usize>) -> Result<usize, String> {
         match index {
             Some(index) => {

@@ -274,7 +274,40 @@ fn main() -> io::Result<()> {
                 }
             }
             "edit" => {
-                println!("TODO");
+                if arguments.len() == 0 {
+                    match todo_list.edit(None, None) {
+                        Ok(item) => {
+                            println!("Task edited successfully:");
+                            println!("{item}")
+                        },
+                        Err(e) => println!("{e}"),
+                    };
+                } else {
+                    match arguments.len() {
+                        1 => {
+                            match todo_list.edit(Some(arguments[0].to_string()), None) {
+                                Ok(item) => {
+                                    println!("Task edited successfully:");
+                                    println!("{item}")
+                                },
+                                Err(e) => println!("{e}"),
+                            };
+                        }
+                        2 => {
+                            match todo_list.edit(Some(arguments[0].to_string()), Some(arguments[1].to_string())) {
+                                Ok(item) => {
+                                    println!("Task edited successfully:");
+                                    println!("{item}")
+                                },
+                                Err(e) => println!("{e}"),
+                            };
+                        }
+                        _ => {
+                            println!("Invalid number of arguments, you must provide a single text between quotes");
+                            println!("Examples:\n > todo edit SingleWord\n > todo edit 'Multiple words between quotes'")
+                        }
+                    }
+                }
                 file.set_len(0)?;
             }
             "help" | "-h" | "--help" => help(),
@@ -321,7 +354,7 @@ fn help() {
     println!("For more information please visit: https://github.com/USpiri/Todo-CLI\n")
 }
 
-fn version(){
+fn version() {
     const VERSION: &str = env!("CARGO_PKG_VERSION");
     println!("todo cli version: {VERSION}");
 }
