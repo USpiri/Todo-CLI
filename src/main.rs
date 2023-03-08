@@ -351,7 +351,7 @@ fn help() {
     println!("\nUSAGE: \n     todo [command] <argument>");
     println!("\nThe text inside '< >' marks is optional");
     println!("Task description must have double quotation marks, it is not necessary for 'task number'\n");
-    println!("For more information please visit: https://github.com/USpiri/Todo-CLI\n")
+    println!("For more information please visit: https://github.com/USpiri/todo\n")
 }
 
 fn version() {
