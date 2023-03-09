@@ -230,9 +230,9 @@ Open documentation on default browser. Alternatives: **"web"**, **"documentation
 `todo doc`
 
 ```
-> todo version
+> todo open_url
 
-todo cli version: 2.2.0
+Open default browser
 ```
 
 ## Install
