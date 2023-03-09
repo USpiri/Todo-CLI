@@ -1,7 +1,8 @@
 mod todo;
-use std::env;
+use std::{env, thread, time};
 use std::fs::OpenOptions;
 use std::io::{self, Seek, SeekFrom};
+use std::process::Command;
 use todo::TodoList;
 
 fn main() -> io::Result<()> {
@@ -25,7 +26,7 @@ fn main() -> io::Result<()> {
     if args.len() > 1 {
         let arguments = &args[2..];
         match args[1].as_str() {
-            "add" => {
+            "add" | "new" | "post" => {
                 if arguments.len() == 0 {
                     match todo_list.add(None) {
                         Ok(string) => println!("Task/s added successfully: \n{string}"),
@@ -53,7 +54,7 @@ fn main() -> io::Result<()> {
                     };
                 } else {
                     match arguments[0].as_str() {
-                        "--all" | "." | "*" => {
+                        "all" | "." | "*" | "--all" => {
                             todo_list.remove_all();
                         }
                         "--last" => {
@@ -96,12 +97,14 @@ fn main() -> io::Result<()> {
                     };
                 } else {
                     match arguments[0].as_str() {
-                        "--all" | "." | "*" => {
+                        "all" | "." | "*" | "--all" => {
                             todo_list.done_all();
                         }
                         "--last" => {
                             match todo_list.done(Some(todo_list.list.len() - 1)) {
-                                Ok(number) => println!("Task {number} marked as 'done' successfully"),
+                                Ok(number) => {
+                                    println!("Task {number} marked as 'done' successfully")
+                                }
                                 Err(e) => println!("{e}"),
                             };
                         }
@@ -137,12 +140,14 @@ fn main() -> io::Result<()> {
                     };
                 } else {
                     match arguments[0].as_str() {
-                        "--all" | "." | "*" => {
+                        "all" | "." | "*" | "--all" => {
                             todo_list.undone_all();
                         }
                         "--last" => {
                             match todo_list.undone(Some(todo_list.list.len() - 1)) {
-                                Ok(number) => println!("Task {number} marked as 'undone' successfully"),
+                                Ok(number) => {
+                                    println!("Task {number} marked as 'undone' successfully")
+                                }
                                 Err(e) => println!("{e}"),
                             };
                         }
@@ -178,12 +183,14 @@ fn main() -> io::Result<()> {
                     };
                 } else {
                     match arguments[0].as_str() {
-                        "--all" | "." | "*" => {
+                        "all" | "." | "*" | "--all" => {
                             todo_list.pending_all();
                         }
                         "--last" => {
                             match todo_list.pending(Some(todo_list.list.len() - 1)) {
-                                Ok(number) => println!("Task {number} marked as 'pending' successfully"),
+                                Ok(number) => {
+                                    println!("Task {number} marked as 'pending' successfully")
+                                }
                                 Err(e) => println!("{e}"),
                             };
                         }
@@ -216,7 +223,7 @@ fn main() -> io::Result<()> {
                     todo_list.print();
                 } else {
                     match arguments[0].as_str() {
-                        "all" | "." | "*" => {
+                        "all" | "." | "*" | "--all" => {
                             todo_list.print();
                         }
                         "done" => {
@@ -228,7 +235,7 @@ fn main() -> io::Result<()> {
                         "pending" => {
                             todo_list.print_list_pending();
                         }
-                        "categorized" => {
+                        "categorized" | "sorted" => {
                             todo_list.print_categorized();
                         }
                         "sort" | "order" => {
@@ -243,13 +250,13 @@ fn main() -> io::Result<()> {
                     }
                 }
             }
-            "task" | "get" => {
+            "task" | "get" | "print" => {
                 if arguments.len() == 0 {
                     match todo_list.get(None) {
                         Ok(task) => {
                             println!("Task found successfully:");
                             print!("{task}");
-                        },
+                        }
                         Err(e) => println!("{e}"),
                     };
                 } else {
@@ -273,13 +280,13 @@ fn main() -> io::Result<()> {
                     }
                 }
             }
-            "edit" => {
+            "edit" | "update" => {
                 if arguments.len() == 0 {
                     match todo_list.edit(None, None) {
                         Ok(item) => {
                             println!("Task edited successfully:");
                             println!("{item}")
-                        },
+                        }
                         Err(e) => println!("{e}"),
                     };
                 } else {
@@ -289,16 +296,19 @@ fn main() -> io::Result<()> {
                                 Ok(item) => {
                                     println!("Task edited successfully:");
                                     println!("{item}")
-                                },
+                                }
                                 Err(e) => println!("{e}"),
                             };
                         }
                         2 => {
-                            match todo_list.edit(Some(arguments[0].to_string()), Some(arguments[1].to_string())) {
+                            match todo_list.edit(
+                                Some(arguments[0].to_string()),
+                                Some(arguments[1].to_string()),
+                            ) {
                                 Ok(item) => {
                                     println!("Task edited successfully:");
                                     println!("{item}")
-                                },
+                                }
                                 Err(e) => println!("{e}"),
                             };
                         }
@@ -312,6 +322,13 @@ fn main() -> io::Result<()> {
             }
             "help" | "-h" | "--help" => help(),
             "version" | "-v" | "--version" => version(),
+            "url" | "web" | "documentation" | "doc" | "open_url" => {
+                if !open_url("https://github.com/USpiri/todo") {
+                    println!("Unable to open browser.\nClick or copy this link: https://github.com/USpiri/todo")
+                } else {
+                    println!("Open default browser")
+                }
+            }
             _ => {
                 println!("Unkown command. Please see the list of available commands");
                 help();
@@ -332,29 +349,72 @@ fn welcome() {
 }
 
 fn help() {
-    println!("\nList of available commands:");
-    println!("     add <'task description'>:     add a new task");
-    println!("     remove <task number>:         remove task number n");
-    println!("     remove-all:                   delete all tasks");
-    println!("     done <task number>:           mark task number n as done");
-    println!("     undone <task number>:         mark task number n as undone");
-    println!("     pending <task number>:        mark task number n as pending");
-    println!("     all-done:                     mark all tasks as done");
-    println!("     all-undone:                   mark all tasks as undone");
-    println!("     all-pending:                  mark all tasks as pending");
-    println!("     task <task number>:           print specific task");
-    println!("     list:                         list all tasks in numeric order");
-    println!("     list-done:                    list all tasks marked as done");
-    println!("     list-undone:                  list all tasks marked as undone");
-    println!("     list-pending:                 list all tasks marked as pending");
-    println!("     list-all:                     list all tasks by category");
-    println!("\nUSAGE: \n     todo [command] <argument>");
-    println!("\nThe text inside '< >' marks is optional");
-    println!("Task description must have double quotation marks, it is not necessary for 'task number'\n");
-    println!("For more information please visit: https://github.com/USpiri/todo\n")
+    println!("\nList of available commands:\n");
+    println!("     add <'task description'>:           adds a new task/s");
+    println!("                                         Example: todo add Multiple 'tasks example'");
+    println!("                                         Alternatives: add, new, push");
+    println!("     remove <task number>:               remove task/s number n");
+    println!(
+        "     remove --all:                       delete all tasks. Alt: 'all', '.', '*', '--all'"
+    );
+    println!("     remove --last:                      delete last tasks");
+    println!("                                         Alternatives: remove, rm, delete, del");
+    println!("                                         Example: todo remove 2 3");
+    println!("     done <task number>:                 mark task number n as done");
+    println!("     undone <task number>:               mark task number n as undone");
+    println!("     pending <task number>:              mark task number n as pending");
+    println!(
+        "      - done/pending/undone --all:       mark all tasks. Alt: 'all', '.', '*', '--all'"
+    );
+    println!("      - done/pending/undone --last:      mark last tasks");
+    println!("                                         Example: todo pending 2 3");
+    println!("                                                  todo done --last");
+    println!("     get <task number>:                  print specific task/s");
+    println!("                                         Example: todo get 3");
+    println!("                                         Alternatives: get, task, print");
+    println!("     list:                               list all tasks in numeric order");
+    println!("     list all:                           list all tasks in numeric order");
+    println!("                                         Alternatives: 'all', '.', '*', '--all'");
+    println!("     list done:                          list all done tasks");
+    println!("     list undone:                        list all undone tasks");
+    println!("     list pending:                       list all pending tasks");
+    println!(
+        "     list categorized:                   list all tasks bu status. Alt: status, sorted"
+    );
+    println!("     list sort:                          Sort list by category. Alt: order");
+    println!("                                         Alternatives: list, ls");
+    println!("                                         Example: todo list done");
+    println!("                                                  todo list --all");
+    println!("     edit <task number> <'description'>: Edit specific task");
+    println!("                                         Alternatives: edit, update");
+    println!("                                         Example: todo edit 2");
+    println!("                                                  todo edit 0 'Edited task'");
+    println!("     help:                               Print help");
+    println!("                                         Alternatives: help, -h, --help");
+    println!("     version:                            Print version");
+    println!("                                         Alternatives: version, -v, --version");
+    println!("     url:                                Open 'todo' documentation in default webbrowser");
+    println!("                                         Alternatives: url, web, documentation, doc");
+    println!("\nUSAGE:");
+    println!("     todo [command] <argument/s>\n");
+    println!("The text inside '< >' marks is optional");
+    println!("The task description must be enclosed in quotes if it has more than");
+    println!("one word, it is not necessary for 'task number'");
+    println!("\nFor more detailed information, visit: https://github.com/USpiri/todo\n");
 }
 
 fn version() {
     const VERSION: &str = env!("CARGO_PKG_VERSION");
     println!("todo cli version: {VERSION}");
+}
+
+fn open_url(url: &str) -> bool {
+    if let Ok(mut child) = Command::new("cmd.exe")
+            .arg("/C").arg("start").arg("").arg(&url).spawn() {
+        thread::sleep(time::Duration::new(3, 0));
+        if let Ok(status) = child.wait() {
+            return status.success();
+        }
+    }
+    false
 }
