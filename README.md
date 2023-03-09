@@ -234,3 +234,7 @@ Open documentation on default browser. Alternatives: **"web"**, **"documentation
 
 todo cli version: 2.2.0
 ```
+
+## Install
+
+Download the [last release installer](https://github.com/USpiri/todo/releases).
