@@ -14,7 +14,7 @@ For example `todo` will print the welcome and help messages.
 
 ### add
 
-Add new task to the list.   
+Add new task/s to the list. Alternatives: **"new"**, **"post"**.  
 `todo add [string/string array]`
 
 ```
@@ -44,10 +44,10 @@ Task/s added successfully:
 
 ### remove
 
-Remove task from list. Alternatives: "remove", "rm", "delete", "del".  
+Remove task/s from list. Alternatives: **"remove"**, **"rm"**, **"delete"**, **"del"**.  
 `todo remove [numbers/otions]`
 - Options: 
-	- **--all**: Remove all tasks (Alternatives: **"."**, **"\*"**). `todo remove --all`
+	- **all**: Remove all tasks (Alternatives: **"."**, **"\*"**, **"--all"**). `todo remove --all`
 	- **--last**: Remove last task. `todo remove --last`
 
 ```
@@ -76,11 +76,11 @@ Task/s removed successfully:
 
 ### done / undone / pending
 
-Mark task as "done", "undone" or "pending".  
+Mark task/s as "done", "undone" or "pending".  
 Each command works similarly "done", "undone" and "pending", but each one marks its respective state.  
 `todo done [numbers/otions]`
 - Options: 
-	- **--all**: Mark all tasks (Alternatives: **"."**, **"\*"**). `todo done --all`
+	- **all**: Mark all tasks (Alternatives: **"."**, **"\*"**, **"--all"**). `todo done --all`
 	- **--last**: Mark last task. `todo done --last`
 
 ```
@@ -107,7 +107,7 @@ All tasks have been marked as 'Done'
 
 ### get
 
-Print a specific task. Alternative: "task".  
+Print a specific task/s. Alternative: **"task"**, **"get"**, **"print"**.  
 `todo get [numbers]`
 
 ```
@@ -128,11 +128,11 @@ Task/s found successfully:
 
 ### list
 
-Print the todo list. `list sort` sort tasks by status. Alternative: "ls".  
+Print the todo list. `list sort` sort tasks by status. Alternative: **"ls"**.  
 `todo list [otions]`
 - Options: 
 	- **(No option)**: List all tasks. `todo list`
-	- **all**: List all tasks (Alternatives: **"."**, **"\*"**). `todo list all`
+	- **all**: List all tasks (Alternatives: **"."**, **"\*"**, **"--all"**). `todo list all`
 	- **done**: List only "done" tasks. `todo list done`
 	- **undone**: List only "undone" tasks. `todo list undone`
 	- **pending**: List only "pending" tasks. `todo list pending`
@@ -178,7 +178,7 @@ New ordered list:
 
 ### edit
 
-Allows to edit a task.  
+Allows to edit a task. Alternative: **"update"**.  
 `todo edit [number] [string]`
 
 ```
@@ -222,4 +222,15 @@ Print a list of commands. Alternatives: "-v", "--version".
 > todo version
 
 todo cli version: 2.0.1
+```
+
+### doc
+
+Open documentation on default browser. Alternatives: **"web"**, **"documentation"**, **"url"**, **"open_url"**.  
+`todo doc`
+
+```
+> todo version
+
+todo cli version: 2.2.0
 ```
