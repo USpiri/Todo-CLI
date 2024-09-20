@@ -159,16 +159,24 @@ fn main() -> io::Result<()> {
                                     Err(_) => println!("{element} is not a number"),
                                 }
                             }
-                            for (i, task) in order.iter().enumerate() {
-                                match todo_list.undone(Some(task.to_owned())) {
-                                    Ok(name) => {
-                                        if i == 0 {
-                                            println!("Task/s marked as 'undone' successfully:")
-                                        }
-                                        println!(" > {name}")
-                                    }
-                                    Err(e) => println!("{e}"),
-                                };
+                           order.iter().enumerate()
+            .filter_map(|(i, task)|{
+                match todo_list.undone(Some(task.to_owned())){
+                    Ok(name) => Some((i, name)),
+                    Err(e) => {
+                        println!("{e}");
+                        None
+                    }
+                }
+            }
+        )
+        .for_each(|(i, name)|{
+            if i==0{
+                println!("Task/s marked as 'undone' successfully: ");
+            }
+            println!("> {name}");
+        })
+                        
                             }
                         }
                     }
