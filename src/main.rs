@@ -272,7 +272,7 @@ fn main() -> io::Result<()> {
                     for element in arguments.iter() {
                         match element.parse() {
                             Ok(number) => order.push(number),
-                            Err(_) => println!("{element} is not a number"),
+                            Err(e) => println!("An error occurred: {}", e),
                         }
                     }
                     for (i, task) in order.iter().enumerate() {
@@ -347,8 +347,7 @@ fn main() -> io::Result<()> {
         help();
     }
 
-    serde_json::to_writer(file, &todo_list)?;
-    Ok(())
+    serde_json::to_writer(file, &todo_list).and(Ok(()))
 }
 
 fn welcome() {
@@ -357,60 +356,59 @@ fn welcome() {
 }
 
 fn help() {
-    println!("\nList of available commands:\n");
-    println!("     add <'task description'>:           adds a new task/s");
-    println!("                                         Example: todo add Multiple 'tasks example'");
-    println!("                                         Alternatives: add, new, push");
-    println!("     remove <task number>:               remove task/s number n");
-    println!(
-        "     remove --all:                       delete all tasks. Alt: 'all', '.', '*', '--all'"
-    );
-    println!("     remove --last:                      delete last tasks");
-    println!("                                         Alternatives: remove, rm, delete, del");
-    println!("                                         Example: todo remove 2 3");
-    println!("     done <task number>:                 mark task number n as done");
-    println!("     undone <task number>:               mark task number n as undone");
-    println!("     pending <task number>:              mark task number n as pending");
-    println!(
-        "      - done/pending/undone --all:       mark all tasks. Alt: 'all', '.', '*', '--all'"
-    );
-    println!("      - done/pending/undone --last:      mark last tasks");
-    println!("                                         Example: todo pending 2 3");
-    println!("                                                  todo done --last");
-    println!("     get <task number>:                  print specific task/s");
-    println!("                                         Example: todo get 3");
-    println!("                                         Alternatives: get, task, print");
-    println!("     list:                               list all tasks in numeric order");
-    println!("     list all:                           list all tasks in numeric order");
-    println!("                                         Alternatives: 'all', '.', '*', '--all'");
-    println!("     list done:                          list all done tasks");
-    println!("     list undone:                        list all undone tasks");
-    println!("     list pending:                       list all pending tasks");
-    println!(
-        "     list categorized:                   list all tasks bu status. Alt: status, sorted"
-    );
-    println!("     list sort:                          Sort list by category. Alt: order");
-    println!("                                         Alternatives: list, ls");
-    println!("                                         Example: todo list done");
-    println!("                                                  todo list --all");
-    println!("     edit <task number> <'description'>: Edit specific task");
-    println!("                                         Alternatives: edit, update");
-    println!("                                         Example: todo edit 2");
-    println!("                                                  todo edit 0 'Edited task'");
-    println!("     help:                               Print help");
-    println!("                                         Alternatives: help, -h, --help");
-    println!("     version:                            Print version");
-    println!("                                         Alternatives: version, -v, --version");
-    println!("     url:                                Open 'todo' documentation in default webbrowser");
-    println!("                                         Alternatives: url, web, documentation, doc");
-    println!("\nUSAGE:");
-    println!("     todo [command] <argument/s>\n");
-    println!("The text inside '< >' marks is optional");
-    println!("The task description must be enclosed in quotes if it has more than");
-    println!("one word, it is not necessary for 'task number'");
-    println!("\nFor more detailed information, visit: https://github.com/USpiri/todo\n");
-}
+    println!(r#"
+List of available commands:
 
+     add <'task description'>:           adds a new task/s
+                                         Example: todo add Multiple 'tasks example'
+                                         Alternatives: add, new, push
+     remove <task number>:               remove task/s number n
+     remove --all:                       delete all tasks. Alt: 'all', '.', '*', '--all'
+     remove --last:                      delete last tasks
+                                         Alternatives: remove, rm, delete, del
+                                         Example: todo remove 2 3
+     done <task number>:                 mark task number n as done
+     undone <task number>:               mark task number n as undone
+     pending <task number>:              mark task number n as pending
+      - done/pending/undone --all:       mark all tasks. Alt: 'all', '.', '*', '--all'
+      - done/pending/undone --last:      mark last tasks
+                                         Example: todo pending 2 3
+                                                  todo done --last
+     get <task number>:                  print specific task/s
+                                         Example: todo get 3
+                                         Alternatives: get, task, print
+     list:                               list all tasks in numeric order
+     list all:                           list all tasks in numeric order
+                                         Alternatives: 'all', '.', '*', '--all'
+     list done:                          list all done tasks
+     list undone:                        list all undone tasks
+     list pending:                       list all pending tasks
+     list categorized:                   list all tasks bu status. Alt: status, sorted
+     list sort:                          Sort list by category. Alt: order
+                                         Alternatives: list, ls
+                                         Example: todo list done
+                                                  todo list --all
+     edit <task number> <'description'>: Edit specific task
+                                         Alternatives: edit, update
+                                         Example: todo edit 2
+                                                  todo edit 0 'Edited task'
+     help:                               Print help
+                                         Alternatives: help, -h, --help
+     version:                            Print version
+                                         Alternatives: version, -v, --version
+     url:                                Open 'todo' documentation in default webbrowser
+                                         Alternatives: url, web, documentation, doc
+
+USAGE:
+     todo [command] <argument/s>
+
+The text inside '< >' marks is optional
+The task description must be enclosed in quotes if it has more than
+one word, it is not necessary for 'task number'
+
+For more detailed information, visit: https://github.com/USpiri/todo
+"#);
+}
 fn version() {
     const VERSION: &str = env!("CARGO_PKG_VERSION");
     println!("todo cli version: {VERSION}");
