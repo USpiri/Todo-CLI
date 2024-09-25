@@ -92,30 +92,29 @@ impl TodoList {
                 Ok(index)
             }
 
-            None => {
-                println!("Enter the number of task to remove:");
-                let mut input = String::new();
-                match io::stdin().read_line(&mut input) {
-                    Ok(_) => (),
-                    Err(_) => return Err("Error gettong arguments".to_string()),
+           match index{
+            Some(index) => {
+                if index >= self.list.len(){
+                    return Err(index.to_string()
+                              + "is not a valid task, please list taks to see what numbers are available");
                 }
-                if input.trim().chars().count() == 0 {
-                    return Err("You must provide some number".to_string());
-                }
-                let number: usize = match input.trim().parse() {
-                    Ok(number) => number,
-                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
-                };
-                if number >= self.list.len() {
-                    return Err(number.to_string()
-                        + " is not a valid task, please list tasks to see what numbers are available");
-                }
-                match self.remove(Some(number)) {
-                    Ok(index) => return Ok(index),
-                    Err(_) => return Err("Error removing task ".to_string() + &number.to_string()),
-                }
+                self.list.remove(index);
+            Ok(index)
             }
-        }
+            match{
+            println!("Enter the number of tasks/ to remove: ");
+            let mut input = String::new();
+        io::stdin().read_line(&mut input).map_err(|_| "Error getting arguments")?;
+        let number: usize = input.trim().parse().map_err(|_| "Please enter a valid number")?;
+        if  number >= self.list.len(){
+            Err(format!("{} is not a valid task, please list tasks to see what numbers are available", number))
+        }else{
+            self.remove(Some(number))
+        }{
+            Ok(index) => Ok(index)
+            Err(e) => println!("{e}"),
+        }}
+           } 
     }
 
     pub fn remove_all(&mut self) {
