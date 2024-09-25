@@ -31,15 +31,9 @@ impl TodoList {
     }
 
     pub fn get(&mut self, index: Option<usize>) -> Result<String, String> {
-        match index {
-            Some(index) => {
-                if index >= self.list.len() {
-                    return Err(index.to_string()
-                    + " is not a valid task, please list tasks to see what numbers are available");
-                }
-                Ok( index.to_string() + ". " + &self.list[index].to_string())
-            }
-
+        match index.and_then(|i| self.list.get(i)
+    .map(|task| format!("{}. {}", i, task))
+    .ok_or_else(|| format!("{} is not a valid task", i).into()))
             None => {
                 println!("Enter the number of task you want:");
                 let mut input = String::new();
@@ -80,7 +74,7 @@ impl TodoList {
 
                 match io::stdin().read_line(&mut input) {
                     Ok(_) => (),
-                    Err(_) => return Err("Error gettong arguments".to_string()),
+                    Err(_) => return Err("Error getting arguments".to_string()),
                 }
                 if input.trim().chars().count() == 0 {
                     return Err("You must provide some text".to_string());
