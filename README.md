@@ -1,4 +1,4 @@
-# Todo - CLI Rust Program
+# Todo - CLI Rust Program 📝
 
 A simple command-line todo list written in Rust.
 

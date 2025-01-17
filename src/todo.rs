@@ -31,15 +31,9 @@ impl TodoList {
     }
 
     pub fn get(&mut self, index: Option<usize>) -> Result<String, String> {
-        match index {
-            Some(index) => {
-                if index >= self.list.len() {
-                    return Err(index.to_string()
-                    + " is not a valid task, please list tasks to see what numbers are available");
-                }
-                Ok( index.to_string() + ". " + &self.list[index].to_string())
-            }
-
+        match index.and_then(|i| self.list.get(i)
+    .map(|task| format!("{}. {}", i, task))
+    .ok_or_else(|| format!("{} is not a valid task", i).into()))
             None => {
                 println!("Enter the number of task you want:");
                 let mut input = String::new();
@@ -66,32 +60,26 @@ impl TodoList {
         }
     }
 
-    pub fn add(&mut self, name: Option<String>) -> Result<String, String> {
-        match name {
-            Some(name) => {
-                let todo_item = TodoItem::new(name.trim().to_string());
-                self.list.push(todo_item);
-                Ok(name)
-            }
-
-            None => {
-                println!("Enter your new task:");
-                let mut input = String::new();
-
-                match io::stdin().read_line(&mut input) {
-                    Ok(_) => (),
-                    Err(_) => return Err("Error gettong arguments".to_string()),
-                }
-                if input.trim().chars().count() == 0 {
-                    return Err("You must provide some text".to_string());
-                }
-                match self.add(Some(input.trim().to_string())) {
-                    Ok(name) => return Ok(name),
-                    Err(_) => return Err("Error adding task".to_string()),
-                }
-            }
+   pub fn add (&mut self, name: Option<String>) -> Result<String, String> {
+    let name = match name{
+        Some(name) => name,
+        None => name,
+        None => {
+            print!("Enter your new task: ");
+            io::stdout().flush().map_err(|_| "Failed to flush stdout")?;
+            let mut input = Strong::new();
+            io::stdin().read_line(&mut input).map_err(|_| "Error getting arguments")?;
+            input
         }
+    };
+    let name = name.trim();
+    if name.is_empty(){
+        return Err("You have to provide some text".to_string());
     }
+    let todo_item = TodoItem::new(name.to_string());
+    self.lsit.push(todo_item);
+    Ok(name.to_string())
+}
 
     pub fn remove(&mut self, index: Option<usize>) -> Result<usize, String> {
         match index {
@@ -104,30 +92,29 @@ impl TodoList {
                 Ok(index)
             }
 
-            None => {
-                println!("Enter the number of task to remove:");
-                let mut input = String::new();
-                match io::stdin().read_line(&mut input) {
-                    Ok(_) => (),
-                    Err(_) => return Err("Error gettong arguments".to_string()),
+           match index{
+            Some(index) => {
+                if index >= self.list.len(){
+                    return Err(index.to_string()
+                              + "is not a valid task, please list taks to see what numbers are available");
                 }
-                if input.trim().chars().count() == 0 {
-                    return Err("You must provide some number".to_string());
-                }
-                let number: usize = match input.trim().parse() {
-                    Ok(number) => number,
-                    Err(_) => return Err("Error: Please enter a valid number.".to_string()),
-                };
-                if number >= self.list.len() {
-                    return Err(number.to_string()
-                        + " is not a valid task, please list tasks to see what numbers are available");
-                }
-                match self.remove(Some(number)) {
-                    Ok(index) => return Ok(index),
-                    Err(_) => return Err("Error removing task ".to_string() + &number.to_string()),
-                }
+                self.list.remove(index);
+            Ok(index)
             }
-        }
+            match{
+            println!("Enter the number of tasks/ to remove: ");
+            let mut input = String::new();
+        io::stdin().read_line(&mut input).map_err(|_| "Error getting arguments")?;
+        let number: usize = input.trim().parse().map_err(|_| "Please enter a valid number")?;
+        if  number >= self.list.len(){
+            Err(format!("{} is not a valid task, please list tasks to see what numbers are available", number))
+        }else{
+            self.remove(Some(number))
+        }{
+            Ok(index) => Ok(index)
+            Err(e) => println!("{e}"),
+        }}
+           } 
     }
 
     pub fn remove_all(&mut self) {

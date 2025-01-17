@@ -159,16 +159,24 @@ fn main() -> io::Result<()> {
                                     Err(_) => println!("{element} is not a number"),
                                 }
                             }
-                            for (i, task) in order.iter().enumerate() {
-                                match todo_list.undone(Some(task.to_owned())) {
-                                    Ok(name) => {
-                                        if i == 0 {
-                                            println!("Task/s marked as 'undone' successfully:")
-                                        }
-                                        println!(" > {name}")
-                                    }
-                                    Err(e) => println!("{e}"),
-                                };
+                           order.iter().enumerate()
+            .filter_map(|(i, task)|{
+                match todo_list.undone(Some(task.to_owned())){
+                    Ok(name) => Some((i, name)),
+                    Err(e) => {
+                        println!("{e}");
+                        None
+                    }
+                }
+            }
+        )
+        .for_each(|(i, name)|{
+            if i==0{
+                println!("Task/s marked as 'undone' successfully: ");
+            }
+            println!("> {name}");
+        })
+                        
                             }
                         }
                     }
@@ -264,7 +272,7 @@ fn main() -> io::Result<()> {
                     for element in arguments.iter() {
                         match element.parse() {
                             Ok(number) => order.push(number),
-                            Err(_) => println!("{element} is not a number"),
+                            Err(e) => println!("An error occurred: {}", e),
                         }
                     }
                     for (i, task) in order.iter().enumerate() {
@@ -339,8 +347,7 @@ fn main() -> io::Result<()> {
         help();
     }
 
-    serde_json::to_writer(file, &todo_list)?;
-    Ok(())
+    serde_json::to_writer(file, &todo_list).and(Ok(()))
 }
 
 fn welcome() {
@@ -402,7 +409,6 @@ fn help() {
     println!("one word, it is not necessary for 'task number'");
     println!("\nFor more detailed information, visit: https://github.com/USpiri/todo\n");
 }
-
 fn version() {
     const VERSION: &str = env!("CARGO_PKG_VERSION");
     println!("todo cli version: {VERSION}");
